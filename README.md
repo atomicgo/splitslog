@@ -108,7 +108,7 @@ Hello, World!
 
 
 <a name="HelloWorld"></a>
-## func [HelloWorld](<https://github.com/atomicgo/template/blob/main/template.go#L4>)
+## func [HelloWorld](<https://github.com/atomicgo/splitslog/blob/main/template.go#L4>)
 
 ```go
 func HelloWorld() string
