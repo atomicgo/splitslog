@@ -48,6 +48,7 @@ func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error {
 		if goa.group != "" {
 			handler = handler.WithGroup(goa.group)
 		}
+
 		if len(goa.attrs) > 0 {
 			handler = handler.WithAttrs(goa.attrs)
 		}
@@ -88,6 +89,7 @@ func (h *SplitHandler) withGroupOrAttrs(goa groupOrAttrs) *SplitHandler {
 	h2.goas = make([]groupOrAttrs, len(h.goas)+1)
 	copy(h2.goas, h.goas)
 	h2.goas[len(h2.goas)-1] = goa
+
 	return &h2
 }
 
