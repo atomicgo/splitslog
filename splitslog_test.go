@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"log/slog"
-	"os"
 	"testing"
 	"testing/slogtest"
 )
@@ -14,10 +13,10 @@ func TestSplitHandler(t *testing.T) {
 	var buf bytes.Buffer
 
 	splitter := splitslog.Splitter{
-		slog.LevelDebug: slog.NewJSONHandler(os.Stdout, nil),
-		slog.LevelInfo:  slog.NewJSONHandler(os.Stdout, nil),
-		slog.LevelWarn:  slog.NewJSONHandler(os.Stderr, nil),
-		slog.LevelError: slog.NewJSONHandler(os.Stderr, nil),
+		slog.LevelDebug: slog.NewJSONHandler(&buf, nil),
+		slog.LevelInfo:  slog.NewJSONHandler(&buf, nil),
+		slog.LevelWarn:  slog.NewJSONHandler(&buf, nil),
+		slog.LevelError: slog.NewJSONHandler(&buf, nil),
 	}
 
 	h := splitslog.NewSplitHandler(splitter)

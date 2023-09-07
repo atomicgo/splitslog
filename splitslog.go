@@ -14,8 +14,7 @@ type Splitter map[slog.Level]slog.Handler
 type SplitHandler struct {
 	Splitter Splitter
 
-	attrs []slog.Attr
-	group string
+	goas []groupOrAttrs
 }
 
 // NewSplitHandler returns a new SplitHandler.
@@ -33,7 +32,7 @@ func NewSplitHandler(splitter Splitter) *SplitHandler {
 		panic("splitter of SplitHandler must have a handler for error level")
 	}
 
-	return &SplitHandler{Splitter: splitter}
+	return &SplitHandler{Splitter: splitter, goas: make([]groupOrAttrs, 0)}
 }
 
 // Enabled implements Handler.Enabled.
@@ -44,26 +43,35 @@ func (h *SplitHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Handle implements Handler.Handle.
 func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error {
 	handler := h.getHandler(r.Level)
-	handler = handler.WithGroup(h.group)
-	handler = handler.WithAttrs(h.attrs)
+
+	for _, goa := range h.goas {
+		if goa.group != "" {
+			handler = handler.WithGroup(goa.group)
+		}
+		if len(goa.attrs) > 0 {
+			handler = handler.WithAttrs(goa.attrs)
+		}
+	}
 
 	return handler.Handle(ctx, r) //nolint:wrapcheck
 }
 
 // WithAttrs implements Handler.WithAttrs.
 func (h *SplitHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &SplitHandler{
-		Splitter: h.Splitter,
-		attrs:    attrs,
+	if len(attrs) == 0 {
+		return h
 	}
+
+	return h.withGroupOrAttrs(groupOrAttrs{attrs: attrs})
 }
 
 // WithGroup implements Handler.WithGroup.
 func (h *SplitHandler) WithGroup(name string) slog.Handler {
-	return &SplitHandler{
-		Splitter: h.Splitter,
-		group:    name,
+	if name == "" {
+		return h
 	}
+
+	return h.withGroupOrAttrs(groupOrAttrs{group: name})
 }
 
 func (h *SplitHandler) getHandler(level slog.Level) slog.Handler {
@@ -73,4 +81,18 @@ func (h *SplitHandler) getHandler(level slog.Level) slog.Handler {
 	}
 
 	return handler
+}
+
+func (h *SplitHandler) withGroupOrAttrs(goa groupOrAttrs) *SplitHandler {
+	h2 := *h
+	h2.goas = make([]groupOrAttrs, len(h.goas)+1)
+	copy(h2.goas, h.goas)
+	h2.goas[len(h2.goas)-1] = goa
+	return &h2
+}
+
+// groupOrAttrs holds either a group name or a list of slog.Attrs.
+type groupOrAttrs struct {
+	group string      // group name if non-empty
+	attrs []slog.Attr // attrs if non-empty
 }
