@@ -46,7 +46,8 @@ func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error {
 	handler := h.getHandler(r.Level)
 	handler = handler.WithGroup(h.group)
 	handler = handler.WithAttrs(h.attrs)
-	return handler.Handle(ctx, r)
+
+	return handler.Handle(ctx, r) //nolint:wrapcheck
 }
 
 // WithAttrs implements Handler.WithAttrs.

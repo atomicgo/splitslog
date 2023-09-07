@@ -55,7 +55,6 @@ linters:
     - gosec
     - gosmopolitan
     - importas
-    - ireturn
     - nakedret
     - nestif
     - nilerr
