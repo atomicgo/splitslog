@@ -90,12 +90,26 @@ Package splitslog provides a handler that splits log records to different handle
 
 The most common use case is to split logs to stdout and stderr based on their level.
 
-```
+
+
+
+
+```go
+package main
+
+import (
+	"log/slog"
+	"os"
+
+	"atomicgo.dev/splitslog"
+)
+
 func main() {
 	splitter := splitslog.Splitter{
 		// Debug and info messages are printed to stdout.
 		slog.LevelDebug: slog.NewJSONHandler(os.Stdout, nil),
 		slog.LevelInfo:  slog.NewJSONHandler(os.Stdout, nil),
+
 		// Warn and error messages are printed to stderr.
 		slog.LevelWarn:  slog.NewJSONHandler(os.Stderr, nil),
 		slog.LevelError: slog.NewJSONHandler(os.Stderr, nil),
@@ -107,25 +121,26 @@ func main() {
 	logger.Info("info message prints to stdout")
 	logger.Error("error message prints to stderr")
 
-	// Output:
 	// stdout: {"time":"2023-09-07T16:56:22.563817+02:00","level":"INFO","msg":"info message prints to stdout"}
 	// stderr: {"time":"2023-09-07T16:56:22.564103+02:00","level":"ERROR","msg":"error message prints to stderr"}
 }
 ```
+
+
 
 ## Index
 
 - [type SplitHandler](<#SplitHandler>)
   - [func NewSplitHandler\(splitter Splitter\) \*SplitHandler](<#NewSplitHandler>)
   - [func \(h \*SplitHandler\) Enabled\(ctx context.Context, level slog.Level\) bool](<#SplitHandler.Enabled>)
-  - [func \(h \*SplitHandler\) Handle\(ctx context.Context, r slog.Record\) error](<#SplitHandler.Handle>)
+  - [func \(h \*SplitHandler\) Handle\(ctx context.Context, record slog.Record\) error](<#SplitHandler.Handle>)
   - [func \(h \*SplitHandler\) WithAttrs\(attrs \[\]slog.Attr\) slog.Handler](<#SplitHandler.WithAttrs>)
   - [func \(h \*SplitHandler\) WithGroup\(name string\) slog.Handler](<#SplitHandler.WithGroup>)
 - [type Splitter](<#Splitter>)
 
 
 <a name="SplitHandler"></a>
-## type [SplitHandler](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L14-L18>)
+## type [SplitHandler](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L15-L19>)
 
 SplitHandler is a handler that splits log records to different handlers based on their level.
 
@@ -137,7 +152,7 @@ type SplitHandler struct {
 ```
 
 <a name="NewSplitHandler"></a>
-### func [NewSplitHandler](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L21>)
+### func [NewSplitHandler](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L22>)
 
 ```go
 func NewSplitHandler(splitter Splitter) *SplitHandler
@@ -153,9 +168,10 @@ NewSplitHandler returns a new SplitHandler.
 package main
 
 import (
-	"atomicgo.dev/splitslog"
 	"log/slog"
 	"os"
+
+	"atomicgo.dev/splitslog"
 )
 
 func main() {
@@ -163,6 +179,7 @@ func main() {
 		// Debug and info messages are printed to stdout.
 		slog.LevelDebug: slog.NewJSONHandler(os.Stdout, nil),
 		slog.LevelInfo:  slog.NewJSONHandler(os.Stdout, nil),
+
 		// Warn and error messages are printed to stderr.
 		slog.LevelWarn:  slog.NewJSONHandler(os.Stderr, nil),
 		slog.LevelError: slog.NewJSONHandler(os.Stderr, nil),
@@ -182,7 +199,7 @@ func main() {
 
 
 <a name="SplitHandler.Enabled"></a>
-### func \(\*SplitHandler\) [Enabled](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L39>)
+### func \(\*SplitHandler\) [Enabled](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L40>)
 
 ```go
 func (h *SplitHandler) Enabled(ctx context.Context, level slog.Level) bool
@@ -191,16 +208,16 @@ func (h *SplitHandler) Enabled(ctx context.Context, level slog.Level) bool
 Enabled implements Handler.Enabled.
 
 <a name="SplitHandler.Handle"></a>
-### func \(\*SplitHandler\) [Handle](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L44>)
+### func \(\*SplitHandler\) [Handle](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L45>)
 
 ```go
-func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error
+func (h *SplitHandler) Handle(ctx context.Context, record slog.Record) error
 ```
 
 Handle implements Handler.Handle.
 
 <a name="SplitHandler.WithAttrs"></a>
-### func \(\*SplitHandler\) [WithAttrs](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L61>)
+### func \(\*SplitHandler\) [WithAttrs](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L62>)
 
 ```go
 func (h *SplitHandler) WithAttrs(attrs []slog.Attr) slog.Handler
@@ -209,7 +226,7 @@ func (h *SplitHandler) WithAttrs(attrs []slog.Attr) slog.Handler
 WithAttrs implements Handler.WithAttrs.
 
 <a name="SplitHandler.WithGroup"></a>
-### func \(\*SplitHandler\) [WithGroup](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L70>)
+### func \(\*SplitHandler\) [WithGroup](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L71>)
 
 ```go
 func (h *SplitHandler) WithGroup(name string) slog.Handler
@@ -218,7 +235,7 @@ func (h *SplitHandler) WithGroup(name string) slog.Handler
 WithGroup implements Handler.WithGroup.
 
 <a name="Splitter"></a>
-## type [Splitter](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L11>)
+## type [Splitter](<https://github.com/atomicgo/splitslog/blob/main/splitslog.go#L12>)
 
 Splitter is a map of log levels to handlers. The default log levels \(slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError\) must be present, otherwise the SplitHandler panics.
 
