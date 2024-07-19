@@ -7,7 +7,8 @@ import (
 )
 
 // Splitter is a map of log levels to handlers.
-// The default log levels (slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError) must be present, otherwise the SplitHandler panics.
+// The default log levels (slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError) must be present,
+// otherwise the SplitHandler panics.
 type Splitter map[slog.Level]slog.Handler
 
 // SplitHandler is a handler that splits log records to different handlers based on their level.
@@ -41,8 +42,8 @@ func (h *SplitHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle implements Handler.Handle.
-func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error {
-	handler := h.getHandler(r.Level)
+func (h *SplitHandler) Handle(ctx context.Context, record slog.Record) error {
+	handler := h.getHandler(record.Level)
 
 	for _, goa := range h.goas {
 		if goa.group != "" {
@@ -54,7 +55,7 @@ func (h *SplitHandler) Handle(ctx context.Context, r slog.Record) error {
 		}
 	}
 
-	return handler.Handle(ctx, r) //nolint:wrapcheck
+	return handler.Handle(ctx, record) //nolint:wrapcheck
 }
 
 // WithAttrs implements Handler.WithAttrs.
