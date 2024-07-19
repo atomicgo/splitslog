@@ -1,15 +1,18 @@
 package splitslog_test
 
 import (
-	"atomicgo.dev/splitslog"
 	"bytes"
 	"encoding/json"
 	"log/slog"
 	"testing"
 	"testing/slogtest"
+
+	"atomicgo.dev/splitslog"
 )
 
 func TestSplitHandler(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	splitter := splitslog.Splitter{
@@ -19,10 +22,10 @@ func TestSplitHandler(t *testing.T) {
 		slog.LevelError: slog.NewJSONHandler(&buf, nil),
 	}
 
-	h := splitslog.NewSplitHandler(splitter)
+	handler := splitslog.NewSplitHandler(splitter)
 
 	results := func() []map[string]any {
-		var ms []map[string]any
+		var resultMap []map[string]any
 
 		for _, line := range bytes.Split(buf.Bytes(), []byte{'\n'}) {
 			if len(line) == 0 {
@@ -34,13 +37,13 @@ func TestSplitHandler(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			ms = append(ms, m)
+			resultMap = append(resultMap, m)
 		}
 
-		return ms
+		return resultMap
 	}
-	err := slogtest.TestHandler(h, results)
 
+	err := slogtest.TestHandler(handler, results)
 	if err != nil {
 		t.Fatal(err)
 	}
