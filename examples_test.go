@@ -1,9 +1,10 @@
 package splitslog_test
 
 import (
-	"atomicgo.dev/splitslog"
 	"log/slog"
 	"os"
+
+	"atomicgo.dev/splitslog"
 )
 
 func ExampleNewSplitHandler() {

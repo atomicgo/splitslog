@@ -40,7 +40,6 @@ func TestSplitHandler(t *testing.T) {
 		return ms
 	}
 	err := slogtest.TestHandler(h, results)
-
 	if err != nil {
 		t.Fatal(err)
 	}
